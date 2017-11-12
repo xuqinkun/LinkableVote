@@ -1,5 +1,7 @@
 ﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="sf" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="s" %>
+
 <%
 	String basePath = request.getScheme() + "://" + request.getServerName() + 
 					":" + request.getServerPort() + request.getContextPath() + "/admin";
@@ -15,17 +17,30 @@
     <title>用户注册</title>
 
 	<style type="text/css">
-	.error-msg {
+	
+	body {
+		background-image:url('assets/picture/bg-img-0.jpg');
+	}
+	
+	.error {
 		color:red;
 		vertical-align:middle;
 		text-align:left;
 	}
-	span.error-msg {
+	span.error {
 		display:block;
 		margin:8px auto;
 		height:40px;
 		left:0;
 		width:90%;
+	}
+	input.error {
+		border-color:red;
+	}
+	input.bg-image {
+		background: url(assets/images/pass.png)  no-repeat right ;
+		background-size: contain;
+		background-color: white;
 	}
 	</style>
 
@@ -41,7 +56,10 @@
 		
 		<!-- BACKGROUND IMAGE -->
 		<!--===================================================-->
-		<div id="bg-overlay"></div>
+		<!-- <div id="bg-overlay"></div> -->
+		
+		<s:url value="admin_register" var="registerUrl"/>
+		<s:url value="admin_login" var="loginUrl"/>
 		
 		<!-- LOGIN FORM -->
 		<!--===================================================-->
@@ -53,10 +71,10 @@
 		            </div>
 		            <form id="form_login">
 		                <div class="form-group">
-		                    <input type="text" name="username" class="form-control" placeholder="用户名/邮箱" autofocus required="required">
+		                    <input type="text" name="username_login" class="form-control" placeholder="用户名/邮箱" autofocus required="required">
 		                </div>
 		                <div class="form-group">
-		                    <input type="password" name="password" class="form-control" placeholder="密码" required="required">
+		                    <input type="password" name="password_login" class="form-control" placeholder="密码" required="required">
 		                </div>
 		                <div class="checkbox pad-btm text-left">
 		                    <input id="demo-form-checkbox" class="magic-checkbox" type="checkbox">
@@ -93,37 +111,37 @@
 		            <div class="mar-ver pad-btm">
 		                <h2 class="h2 mar-no">创建新用户</h2>
 		            </div>
-		            <sf:form commandName="admin">
+		            <sf:form modelAttribute="admin" id="register-form" action="${registerUrl}">
 		                	<div class="col-lg-2"></div>
 		                    <div class="col-lg-8">
-		                        <div class="form-group">
-		                            <sf:input path="username" id="username" class="form-control" placeholder="用户名" required="required"/>
+		                        <div class="form-group" >
+		                            <sf:input path="username" class="form-control" maxLength="12" placeholder="用户名" required="required"/>
 		                        </div>
 		                        <div class="form-group">
-		                            <sf:input path="realname" id="realname" class="form-control" placeholder="真实姓名" required="required"/>
+		                            <sf:input path="realname" id="realname" class="form-control" maxLength="10" placeholder="真实姓名" required="required"/>
 		                        </div>
 		                        <div class="form-group">
-		                            <sf:password path="password" id="pwd" class="form-control" placeholder="密码" required="required"/>
+		                            <sf:password path="password" id="pwd" class="form-control" maxLength="15" placeholder="密码" required="required"/>
 		                        </div>
 		                        <div class="form-group">
-		                            <sf:password path="password2" id="pwd2" class="form-control" placeholder="确认密码" required="required"/>
+		                            <sf:password path="password2" id="pwd2" class="form-control" maxLength="15" placeholder="确认密码" required="required"/>
 		                        </div>
 		                        <div class="form-group">
-		                            <sf:input path="email" id="email"  class="form-control" placeholder="电子邮箱" required="required"/>
+		                            <sf:input path="email" id="email"  class="form-control" maxLength="20" placeholder="电子邮箱" required="required"/>
 		                        </div>
 		                        <div class="checkbox pad-btm text-left">
 				                    <input id="demo-form-checkbox" class="magic-checkbox" type="checkbox">
 				                    <label for="demo-form-checkbox">我同意 <a href="#" class="btn-link">安全协议</a></label>
 			               		</div>
-		                		<button class="btn btn-primary btn-block" name="register">注册</button>
+		                		<button class="btn btn-primary btn-block" type="submit">注册</button>
 			                </div> <!-- col-lg-8 -->
 			                <div class="col-lg-2">
 			                    <div style="width:280px">
-			                    	<sf:errors cssClass="error-msg" path="username" name="username"/>
-			                    	<sf:errors cssClass="error-msg" path="realname" name="realname"/>
-			                    	<sf:errors cssClass="error-msg" path="password" name="pwd"/>
-			                    	<sf:errors cssClass="error-msg" path="password2" name="pwd2"/>
-			                    	<sf:errors cssClass="error-msg" path="email" name="email"/>
+			                    	<span id="usernameControl" class="error"><sf:errors cssClass="error" path="username" name="username"/></span>
+			                    	<span id="realnameControl" class="error"><sf:errors cssClass="error" path="realname" name="realname"/></span>
+			                    	<span id="passwordControl" class="error"><sf:errors cssClass="error" path="password" name="pwd"/></span>
+			                    	<span id="password2Control" class="error"><sf:errors cssClass="error" path="password2" name="pwd2"/></span>
+			                    	<span id="emailControl" class="error"><sf:errors cssClass="error" path="email" name="email"/></span>
 			                    </div>
 		                    </div>
 		                
@@ -149,7 +167,7 @@
 		
 		<!-- DEMO PURPOSE ONLY -->
 		<!--===================================================-->
-		<div class="demo-bg">
+		<!-- <div class="demo-bg">
 		    <div id="demo-bg-list">
 		        <div class="demo-loading"><i class="psi-repeat-2"></i></div>
 		        <img class="demo-chg-bg bg-trans active" src="assets/picture/bg-img-0.jpg" alt="Background Image">
@@ -161,7 +179,7 @@
 		        <img class="demo-chg-bg" src="assets/picture/bg-img-6.jpg" alt="Background Image">
 		        <img class="demo-chg-bg" src="assets/picture/bg-img-7.jpg" alt="Background Image">
 		    </div>
-		</div>
+		</div> -->
 		<!--===================================================-->
 		
 		
@@ -170,96 +188,5 @@
 	<!--===================================================-->
 	<!-- END OF CONTAINER -->
 
-	<script type="text/javascript">
-		
-		$(document).ready(function(){
-			$("a[href='#login-form']").click(function(){
-				$("#login-form").css("display","block");	
-				$("#register-form").css("display","none");	
-			});
-			$("a[href='#register-form']").click(function(){
-				$("#register-form").css("display","block");	
-				$("#login-form").css("display","none");		
-			});
-			var checkUserName = function() {
-				var username = $("#username").val();
-				var unLen = username.length;
-				if (unLen < 2 || unLen > 12) {
-					alert("用户名长度必须在2和12之间");
-					return false;
-				}
-			}
-			var checkRealName = function() {
-				var realname = $("#realname").val();
-				var rnLen = realname.length;
-				if (rnLen < 2 || rnLen > 12) {
-					alert("真实姓名长度必须在2和12之间");
-					return false;
-				}
-			}  
-			var checkPwd = function() {
-				var pwd = $("#pwd").val();
-				var pwdLen = pwd.length;
-				if (pwdLen < 6 || pwdLen > 15) {
-					alert("密码长度必须在6到15之间");
-					return false;
-				}
-			}
-			var checkPwd2 = function() {
-				var pwd = $("#pwd").val();
-				var pwd2 = $("#pwd2").val();
-				if (pwd2 != pwd) {
-					alert("两次密码必须相同！");
-					return false;
-				}
-			}
-			var checkEmail = function() {
-				var email = $("#email").val();
-				var emailLen = email.length;
-				if (emailLen == 0) {
-					alert("邮箱不能为空！");
-				}
-			}
-			
-			$("#username").blur(function(){
-				//checkUserName();
-			});
-			var basePath = $("base").attr("href");
-			$("button[name='register']").click(function(){
-				
-				$.ajax({
-					url: basePath + "/admin_register/",
-					type: "POST",
-					data: {
-						username:$("#username").val(),
-						password:$("#password").val()
-					},
-					dataType: "json",
-					success: function(result) {
-						console.log(result);
-					}
-				});
-			});
-			
-			$("button[name='login']").click(function(){
-				$.ajax({
-					url: basePath + "/admin_login/",
-					type: "POST",
-					data: {
-						username:$("input[name='username']").val(),
-						password:$("input[name='password']").val()
-					},
-					dataType: "json",
-					success: function(result) {
-						console.log(result);
-					}
-				});
-			});
-		});
-		
-		
-		
-	</script>
-	
 	</body>
 </html>

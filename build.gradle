@@ -73,9 +73,12 @@ dependencies {
     ]
     
     compile slf4j
-    
+    /** JSR Validation **/
 	compile group: 'javax.validation', name: 'validation-api', version: '1.1.0.Final'
 	compile group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.0.2.Final'
+	/** JSON Converter **/
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.8'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.8'
     
 }
 

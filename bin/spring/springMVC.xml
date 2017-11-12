@@ -11,7 +11,12 @@
 
 	<context:annotation-config />
 	<context:component-scan base-package="com.xqk.controller" />
-	<mvc:annotation-driven validator="validator"/>
+	<mvc:annotation-driven validator="validator">
+		<mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+   		</mvc:message-converters>
+	</mvc:annotation-driven>
 	
 	<!-- 静态资源重定向 -->
 <!-- 	<mvc:default-servlet-handler/> -->
@@ -37,7 +42,7 @@
 		<property name="defaultEncoding" value="UTF-8"/>
 	</bean>
 	
-	<bean id="myResourceHandler" name="myResourceHandler"
+	<!-- <bean id="myResourceHandler" name="myResourceHandler"
       class="org.springframework.web.servlet.resource.ResourceHttpRequestHandler">
       <property name="locations" value="/LinkableVote/" />
       <property name="supportedMethods">
@@ -47,6 +52,6 @@
             <value>POST</value>
          </list>
      </property>
-     <!-- cacheSeconds: maybe you should set it to zero because of the posts-->
-</bean>
+     cacheSeconds: maybe you should set it to zero because of the posts
+	</bean> -->
 </beans>
