@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+	<display-name></display-name>
+
+
+	<servlet>
+		<!--在DispatcherServlet的初始化过程中，框架会在web应用的 WEB-INF文件夹下寻找名为[servlet-name]-servlet.xml 的配置文件，生成文件中定义的bean。-->  
+		<servlet-name>DispatcherServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:spring/springMVC.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>DispatcherServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 静态资源映射 -->
+	<servlet-mapping>  
+    <servlet-name>default</servlet-name>  
+    <url-pattern>*.jpg</url-pattern>  
+	</servlet-mapping>  
+	<servlet-mapping>  
+	    <servlet-name>default</servlet-name>  
+	    <url-pattern>*.js</url-pattern>  
+	</servlet-mapping>  
+	<servlet-mapping>  
+	    <servlet-name>default</servlet-name>  
+	    <url-pattern>*.css</url-pattern>  
+	</servlet-mapping>  
+	<servlet-mapping>  
+	    <servlet-name>default</servlet-name>  
+	    <url-pattern>*.css.map</url-pattern>  
+	</servlet-mapping>  
+	<servlet-mapping>  
+	    <servlet-name>default</servlet-name>  
+	    <url-pattern>*.ttf</url-pattern>  
+	</servlet-mapping>  
+	<servlet-mapping>  
+	    <servlet-name>default</servlet-name>  
+	    <url-pattern>*.woff</url-pattern>  
+	</servlet-mapping>
+		
+	
+<!-- 	<welcome-file-list> -->
+<!-- 		<welcome-file>/pages/main.jsp</welcome-file> -->
+<!-- 	</welcome-file-list> -->
+	<!-- <error-page>
+		<error-code>404</error-code>
+		<location>/pages/nopage.jsp</location>
+	</error-page>
+	<error-page>
+		<exception-type>java.lang.NullPointerException</exception-type>
+		<location>/pages/error.jsp</location>
+	</error-page> -->
+
+</web-app>
