@@ -1,6 +1,20 @@
+package springinaction.chapter05.util;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class FormValidationUtil {
 	private InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("ValidationMessages.properties");
 	private Properties prop = new Properties();
+	private Log log = LogFactory.getLog(FormValidationUtil.class); 
 	
 	public FormValidationUtil() {
 		try {
@@ -35,19 +49,27 @@ public class FormValidationUtil {
 				StringBuffer methodName = new StringBuffer("set");
 				methodName.append(key.substring(0, 1).toUpperCase());
 				methodName.append(key.substring(1));
-				Object arg = null;
+				Object arg = value;
 				Class<?> argType = null;
 				
 				if (value.matches("\\d+")) {
 					argType = Integer.class;
+					arg = Integer.parseInt(value);
 				} 
 				else if (value.matches("\\d+\\.+\\d+")) {
 					argType = Double.class;
+					arg = Double.parseDouble(value);
 				}
 				else {
 					argType = String.class;
 				}
-				clazz.getMethod(methodName.toString(), argType).invoke(obj, arg);
+				try {
+					clazz.getMethod(methodName.toString(), argType).invoke(obj, arg);
+				} catch (NoSuchMethodException e) {
+					
+					log.info("java.lang.NoSuchMethodException: " + e.getMessage());
+					
+				}
 			}
 
 			return obj;
