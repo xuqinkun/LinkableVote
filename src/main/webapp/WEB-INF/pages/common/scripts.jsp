@@ -40,3 +40,4 @@
 <!-- <script src="assets/js/bg-images.js"></script> -->
 
 <script src="assets/myjs/form_validation.js"></script>
+<script src="assets/ajax/ajax.js"></script>

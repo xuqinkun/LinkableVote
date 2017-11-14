@@ -49,103 +49,101 @@ Validator = {
 	}
 };
 
-function collectFormData(fields) {
-	var data = {};
-	for (var i = 0; i < fields.length; i++) {
-		var $item = $(fields[i]);
-		data[$item.attr('name')] = $item.val();
-	}
-	return data;
-}
-$(document).ready(function(){
-	$("a[href='#login-form']").click(function(){
-		$("#login-form").css("display","block");	
-		$("#register-form").css("display","none");	
-	});
-	$("a[href='#register-form']").click(function(){
-		$("#register-form").css("display","block");	
-		$("#login-form").css("display","none");		
-	});
-	
-	$("#username").blur(function(){
-		Validator.init("username", "用户名", 2, 12);
-		Validator.validate();
-	});
-	
-	$("#realname").blur(function(){
-		Validator.init("realname", "真实姓名", 2, 10);
-		Validator.validate();
-	});
-	
-	$("#pwd").blur(function(){
-		Validator.init("password", "密码", 6, 15);
-		Validator.validate();
-	});
-	
-	$("#pwd2").blur(function(){
-		Validator.init("password2", "密码", 6, 15);
-		if ($("#pwd2").val() == $("#pwd").val()) {
+
+var check = function(item) {
+	var name = $(item).attr("placeholder");
+	var fieldName = $(item).attr("name");
+	var min = parseInt($(item).attr("min"));
+	var max = parseInt($(item).attr("maxLength"));
+	Validator.init(fieldName, name, min, max);
+	if (name == "password2") {
+		if ($("input[password]").val() == $("input[password2]").val()) {
 			if (Validator.validate()) {
 				Validator.render("", "bg-image", "error");
 			}
 		} else {
 			Validator.render("两次密码必须一致", "error", "bg-image");
 		}
-	});
-	
-	$("#email").blur(function(){
-		var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+	} 
+	else if (fieldName == "email") {
 		Validator.init("email", "邮箱", 6, 15);
-		if(!myreg.test($("#email").val())) {
+		var email = $("#email").val();
+		if (email == null || email == "") {
+			Validator.render("邮箱不能为空", "error", "bg-image");
+		}
+		
+		var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+		if(!myreg.test(email)) {
 			Validator.render("邮箱格式不正确:[用户名]+@+[域名]，如xxx@163.com", "error", "bg-image");
 		} else {
 			Validator.render("", "bg-image", "error");
 		}
+	} 
+	else {
+		Validator.validate();
+	}
+}
+function collectFormData(fields) {
+	var data = {};
+	for (var i = 0; i < fields.length; i++) {
+		var $item = $(fields[i]);
+		if ($item != undefined) {
+			data[$item.attr('name')] = $item.val();
+		}
+	}
+	return data;
+}
+
+$(document).ready(function(){
+	$("a[href='#login-form']").click(function(e){
+		$("#login-form").css("display","block");	
+		$("#register-form").css("display","none");
+		e.preventDefault();
+	});
+	$("a[href='#register-form']").click(function(e){
+		$("#register-form").css("display","block");	
+		$("#login-form").css("display","none");
+		e.preventDefault();
 	});
 	
 	var basePath = $("base").attr("href");
 	var registerUrl = basePath + "/" +'${registerUrl}';
 		
 	var $form = $('#register-form');
+	var $inputs = $form.find('input');
+	
+//	for (var i = 0; i < $inputs.length; i++) {
+//		var $item = $($inputs[i]);
+//		if ($item.attr("type") == undefined) {
+//			$item.on("blur", check($item));
+//		}
+//		
+//	}
+		
 	$form.bind('submit', function(e) {
 		// Ajax validation
-		var $inputs = $form.find('input');
 		var data = collectFormData($inputs);
 		
-		$.post(registerUrl, data, function(response) {
-			$form.find('.control-group').removeClass('error');
-			$form.find('.help-inline').empty();
-			$form.find('.alert').remove();
-			
-			if (response.status == 'ERROR') {
-				for (var i = 0; i < response.errorMessageList.length; i++) {
-					var item = response.errorMessageList[i];
-					//var $controlGroup = $('#' + item.fieldName);
-					//$controlGroup.addClass('error');
-					console.log(item.message);
-				}
-			} else {
-				$form.unbind('submit');
-				$form.submit();
+		var params = {
+			url : registerUrl,
+			type: "post",
+			dataType: "json",
+			data: data
+		}; 
+		var succCallback = function(data) {
+			if (data.status == "SUCCESS") {
+				console.log("register success!");
 			}
-		}, 'json');
-		
+			if (data.status == "ERROR") {
+				$.each(data.errorMessageList, function(index, value) {
+					var $span = $("#" + value.fieldName + "control");
+					$span.html(message);
+				});
+			}
+		};
 		e.preventDefault();
 		return false;
 	});
 	
-	$("button[name='login']").click(function(){
-		$.ajax({
-			url: basePath + "/admin_login/",
-			type: "POST",
-			data: {
-				username:$("input[name='username']").val(),
-				password:$("input[name='password']").val()
-			},
-			dataType: "json",
-			success: function(result) {
-				console.log(result);
-			}
-		});
-	});
+	
 });

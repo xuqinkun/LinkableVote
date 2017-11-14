@@ -1,22 +1,27 @@
-package springinaction.chapter05.util;
+package com.xqk.util;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Component;
 
-public class FormValidationUtil {
+import com.xqk.pojo.ErrorMessage;
+import com.xqk.pojo.ErrorMessageWrapper;
+
+@Component
+public class FormValidator {
 	private InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("ValidationMessages.properties");
 	private Properties prop = new Properties();
-	private Log log = LogFactory.getLog(FormValidationUtil.class); 
+//	private Log log = LogFactory.getLog(FormValidator.class); 
 	
-	public FormValidationUtil() {
+	public FormValidator() {
 		try {
 			prop.load(in);
 		} catch (IOException e) {
@@ -40,31 +45,8 @@ public class FormValidationUtil {
 		return args;
 	}
 
-	public <T> T getBean(Map<String, String> params, Class<T> clazz) {
-
-		try {
-			T obj = clazz.newInstance();
-			for (Field field : clazz.getDeclaredFields()) {
-				String fieldName = field.getName();
-				Class<?> fieldType = field.getType();
-				String fieldValue = params.get(fieldName);
-				String methodName = "set";
-				methodName += fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-				Method method = clazz.getMethod(methodName, fieldType);
-				method.invoke(obj, fieldValue);
-			}
-
-			return obj;
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-
-		return null;
-	}
-
-	
-	public Map<String, String> validate(Map<String, String> params, Class<?> clazz) {
-		Map<String, String> errorMap = new HashMap<>();
+	public ErrorMessageWrapper validate(Map<String, String> params, Class<?> clazz) {
+		List<ErrorMessage> errorList =  new ArrayList<>();
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
 			String fieldName = field.getName();
@@ -76,7 +58,7 @@ public class FormValidationUtil {
 				Class<? extends Annotation> type = annotation.annotationType();
 				String typeName = type.toString();
 				String typeSimpleName = typeName.substring(typeName.lastIndexOf(".") + 1);
-				
+				ErrorMessage errorMessage = null;
 				Map<String, String> args = getArguments(annotation.toString());
 				String key = args.get("message");
 				if (typeSimpleName.equals("NotNull") && fieldValue == null) {
@@ -84,7 +66,8 @@ public class FormValidationUtil {
 					if (errorMsg == null) {
 						errorMsg = fieldName + " con not be null";
 					}
-					errorMap.put(fieldName, errorMsg);
+					errorMessage = new ErrorMessage(fieldName, errorMsg);
+					errorList.add(errorMessage);
 					break;
 				}
 				else if (typeSimpleName.equals("Size")) {
@@ -101,7 +84,7 @@ public class FormValidationUtil {
 						} else {
 							errorMsg = fieldName + " must be " + min + " and " + max + " long!";
 						}
-						errorMap.put(fieldName, errorMsg);
+						
 					}
 				}
 				else if (typeSimpleName.equals("Pattern")) {
@@ -111,12 +94,13 @@ public class FormValidationUtil {
 						if (errorMsg == null) {
 							errorMsg = fieldName + " should be valid!";
 						}
-						errorMap.put(fieldName, errorMsg);
 					}
 				}
+				errorMessage = new ErrorMessage(fieldName, errorMsg);
+				errorList.add(errorMessage);
 			}
 		}
-		return errorMap;
+		return new ErrorMessageWrapper(errorList);
 	}
 
 }

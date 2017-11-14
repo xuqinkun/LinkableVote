@@ -1,3 +1,5 @@
+package com.xqk.util;
+
 public class TypeParser {
 	
 	public static Object toType(String src, Class<?> type) {

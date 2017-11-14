@@ -111,41 +111,41 @@
 		            <div class="mar-ver pad-btm">
 		                <h2 class="h2 mar-no">创建新用户</h2>
 		            </div>
-		            <sf:form modelAttribute="admin" id="register-form" action="${registerUrl}">
+		            <form  id="register-form" >
 		                	<div class="col-lg-2"></div>
 		                    <div class="col-lg-8">
 		                        <div class="form-group" >
-		                            <sf:input path="username" class="form-control" maxLength="12" placeholder="用户名" required="required"/>
+		                            <input name="username" onkeyup="check(this)" class="form-control" min="2" maxLength="12" placeholder="用户名"  required="required"/>
 		                        </div>
 		                        <div class="form-group">
-		                            <sf:input path="realname" id="realname" class="form-control" maxLength="10" placeholder="真实姓名" required="required"/>
+		                            <input name="realname" onkeyup="check(this)" class="form-control" min="2" maxLength="10" placeholder="真实姓名" required="required"/>
 		                        </div>
 		                        <div class="form-group">
-		                            <sf:password path="password" id="pwd" class="form-control" maxLength="15" placeholder="密码" required="required"/>
+		                            <input name="password" onkeyup="check(this)" class="form-control" min="6" maxLength="15" placeholder="密码" required="required"/>
 		                        </div>
 		                        <div class="form-group">
-		                            <sf:password path="password2" id="pwd2" class="form-control" maxLength="15" placeholder="确认密码" required="required"/>
+		                            <input name="password2" onkeyup="check(this)" class="form-control" min="6" maxLength="15" placeholder="确认密码" required="required"/>
 		                        </div>
 		                        <div class="form-group">
-		                            <sf:input path="email" id="email"  class="form-control" maxLength="20" placeholder="电子邮箱" required="required"/>
+		                            <input name="email"  onkeyup="check(this)" class="form-control" maxLength="20" placeholder="电子邮箱" required="required"/>
 		                        </div>
 		                        <div class="checkbox pad-btm text-left">
-				                    <input id="demo-form-checkbox" class="magic-checkbox" type="checkbox">
+				                    <input name="agreement" class="magic-checkbox" type="checkbox">
 				                    <label for="demo-form-checkbox">我同意 <a href="#" class="btn-link">安全协议</a></label>
 			               		</div>
 		                		<button class="btn btn-primary btn-block" type="submit">注册</button>
 			                </div> <!-- col-lg-8 -->
 			                <div class="col-lg-2">
 			                    <div style="width:280px">
-			                    	<span id="usernameControl" class="error"><sf:errors cssClass="error" path="username" name="username"/></span>
-			                    	<span id="realnameControl" class="error"><sf:errors cssClass="error" path="realname" name="realname"/></span>
-			                    	<span id="passwordControl" class="error"><sf:errors cssClass="error" path="password" name="pwd"/></span>
-			                    	<span id="password2Control" class="error"><sf:errors cssClass="error" path="password2" name="pwd2"/></span>
-			                    	<span id="emailControl" class="error"><sf:errors cssClass="error" path="email" name="email"/></span>
+			                    	<span id="usernameControl" class="error"></span>
+			                    	<span id="realnameControl" class="error"></span>
+			                    	<span id="passwordControl" class="error"></span>
+			                    	<span id="password2Control" class="error"></span>
+			                    	<span id="emailControl" class="error"></span>
 			                    </div>
 		                    </div>
 		                
-		            </sf:form>
+		            </form>
 		        </div>
 		        <div class="pad-all">已有账户? <a href="#login-form" class="btn-link mar-rgt">登录</a>
 		
@@ -162,27 +162,6 @@
 		        </div>
 		    </div>
 		</div>
-		<!--===================================================-->
-		
-		
-		<!-- DEMO PURPOSE ONLY -->
-		<!--===================================================-->
-		<!-- <div class="demo-bg">
-		    <div id="demo-bg-list">
-		        <div class="demo-loading"><i class="psi-repeat-2"></i></div>
-		        <img class="demo-chg-bg bg-trans active" src="assets/picture/bg-img-0.jpg" alt="Background Image">
-		        <img class="demo-chg-bg" src="assets/picture/bg-img-1.jpg" alt="Background Image">
-		        <img class="demo-chg-bg" src="assets/picture/bg-img-2.jpg" alt="Background Image">
-		        <img class="demo-chg-bg" src="assets/picture/bg-img-3.jpg" alt="Background Image">
-		        <img class="demo-chg-bg" src="assets/picture/bg-img-4.jpg" alt="Background Image">
-		        <img class="demo-chg-bg" src="assets/picture/bg-img-5.jpg" alt="Background Image">
-		        <img class="demo-chg-bg" src="assets/picture/bg-img-6.jpg" alt="Background Image">
-		        <img class="demo-chg-bg" src="assets/picture/bg-img-7.jpg" alt="Background Image">
-		    </div>
-		</div> -->
-		<!--===================================================-->
-		
-		
 		
 	</div>
 	<!--===================================================-->

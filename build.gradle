@@ -33,12 +33,16 @@ sourceSets{
 ext {
 	deps = [	
     		springVersion : '4.3.12.RELEASE',
-    		slf4jVersion : '1.7.25'
+    		slf4jVersion : '1.7.25',
+    		jettyVersion : '9.4.7.v20170914',
     ]
 }
 dependencies {
-	runtime 'org.eclipse.jetty:apache-jsp:9.4.6.v20170531'
-	compile 'org.eclipse.jetty.aggregate:jetty-all:9.4.6.v20170531'
+	/** Jetty **/
+	List jetty = [ "org.eclipse.jetty:apache-jsp:${deps.jettyVersion}",
+		"org.eclipse.jetty.aggregate:jetty-all:${deps.jettyVersion}",
+	 ]
+	compile jetty
 	compile group: 'javax.servlet.jsp.jstl', name: 'jstl', version: '1.2'
 	compile group: 'org.apache.taglibs', name: 'taglibs-standard-impl', version: '1.2.5'
 	
