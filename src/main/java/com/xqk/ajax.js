@@ -1,14 +1,16 @@
 var myAjax = function(params, succCallback, failCallback, allCallback) {
 	
 	$.ajax(params).done(function(data, textStatus, jqXHR){
-		if (succCallack && typeof succCallback == "function") {
+		if (succCallback && typeof succCallback == "function") {
 			succCallback(data);
 		}
 	})
 	.fail(function(jqXHR, textStatus, errorThrown){
-		alert("fail");
+		console.log("===fail===");
+		console.log(textStatus);
+		console.log(jqXHR.responseJSON.returnMessage)
 	})
 	.always(function(){
-		alert("always");
+		
 	});
 };
