@@ -44,32 +44,14 @@ public class FormValidationUtil {
 
 		try {
 			T obj = clazz.newInstance();
-			for (String key : params.keySet()) {
-				String value = params.get(key);
-				StringBuffer methodName = new StringBuffer("set");
-				methodName.append(key.substring(0, 1).toUpperCase());
-				methodName.append(key.substring(1));
-				Object arg = value;
-				Class<?> argType = null;
-				
-				if (value.matches("\\d+")) {
-					argType = Integer.class;
-					arg = Integer.parseInt(value);
-				} 
-				else if (value.matches("\\d+\\.+\\d+")) {
-					argType = Double.class;
-					arg = Double.parseDouble(value);
-				}
-				else {
-					argType = String.class;
-				}
-				try {
-					clazz.getMethod(methodName.toString(), argType).invoke(obj, arg);
-				} catch (NoSuchMethodException e) {
-					
-					log.info("java.lang.NoSuchMethodException: " + e.getMessage());
-					
-				}
+			for (Field field : clazz.getDeclaredFields()) {
+				String fieldName = field.getName();
+				Class<?> fieldType = field.getType();
+				String fieldValue = params.get(fieldName);
+				String methodName = "set";
+				methodName += fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+				Method method = clazz.getMethod(methodName, fieldType);
+				method.invoke(obj, fieldValue);
 			}
 
 			return obj;
