@@ -1,0 +1,118 @@
+public class FormValidationUtil {
+	private InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("ValidationMessages.properties");
+	private Properties prop = new Properties();
+	
+	public FormValidationUtil() {
+		try {
+			prop.load(in);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public Map<String, String> getArguments(String src) {
+		Map<String, String> args = new HashMap<String, String>();
+		if (!(src.contains("(") && src.contains(")"))) {
+			return null;
+		}
+		String values = src.substring(src.indexOf("(") + 1, src.lastIndexOf(")"));
+		String[] pairs = values.split(",");
+		for (String pair : pairs) {
+			String[] group = pair.split("=");
+			if (!group[1].equals("[]")) {
+				args.put(group[0].trim(), group[1].trim());
+			}
+		}
+		return args;
+	}
+
+	public <T> T getBean(Map<String, String> params, Class<T> clazz) {
+
+		try {
+			T obj = clazz.newInstance();
+			for (String key : params.keySet()) {
+				String value = params.get(key);
+				StringBuffer methodName = new StringBuffer("set");
+				methodName.append(key.substring(0, 1).toUpperCase());
+				methodName.append(key.substring(1));
+				Object arg = null;
+				Class<?> argType = null;
+				
+				if (value.matches("\\d+")) {
+					argType = Integer.class;
+				} 
+				else if (value.matches("\\d+\\.+\\d+")) {
+					argType = Double.class;
+				}
+				else {
+					argType = String.class;
+				}
+				clazz.getMethod(methodName.toString(), argType).invoke(obj, arg);
+			}
+
+			return obj;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+
+		return null;
+	}
+
+	
+	public Map<String, String> validate(Map<String, String> params, Class<?> clazz) {
+		Map<String, String> errorMap = new HashMap<>();
+		Field[] fields = clazz.getDeclaredFields();
+		for (Field field : fields) {
+			String fieldName = field.getName();
+			Annotation[] annotations = field.getAnnotations();
+			String fieldValue = params.get(fieldName);
+			
+			for (Annotation annotation : annotations) {
+				String errorMsg = "";
+				Class<? extends Annotation> type = annotation.annotationType();
+				String typeName = type.toString();
+				String typeSimpleName = typeName.substring(typeName.lastIndexOf(".") + 1);
+				
+				Map<String, String> args = getArguments(annotation.toString());
+				String key = args.get("message");
+				if (typeSimpleName.equals("NotNull") && fieldValue == null) {
+					errorMsg = prop.getProperty(key);
+					if (errorMsg == null) {
+						errorMsg = fieldName + " con not be null";
+					}
+					errorMap.put(fieldName, errorMsg);
+					break;
+				}
+				else if (typeSimpleName.equals("Size")) {
+					String minStr = args.get("min");
+					int min = minStr != null ? Integer.parseInt(minStr) : Integer.MIN_VALUE;
+					String maxStr = args.get("max");
+					int max = minStr != null ? Integer.parseInt(maxStr) : Integer.MAX_VALUE;
+					int len = fieldValue.length();
+					if (len < min || len > max) {
+						errorMsg = prop.getProperty(key);
+						if (errorMsg != null && errorMsg.contains("min") && errorMsg.contains("max")) {
+							errorMsg = errorMsg.replace("{min}", String.valueOf(min));
+							errorMsg = errorMsg.replace("{max}", String.valueOf(max));
+						} else {
+							errorMsg = fieldName + " must be " + min + " and " + max + " long!";
+						}
+						errorMap.put(fieldName, errorMsg);
+					}
+				}
+				else if (typeSimpleName.equals("Pattern")) {
+					String regex = args.get("regexp");
+					if (!fieldValue.matches(regex)) {
+						errorMsg = prop.getProperty(args.get("message"));
+						if (errorMsg == null) {
+							errorMsg = fieldName + " should be valid!";
+						}
+						errorMap.put(fieldName, errorMsg);
+					}
+				}
+			}
+		}
+		return errorMap;
+	}
+
+}
