@@ -117,6 +117,7 @@ $(document).ready(function(){
 	var intervalId = 0;
 	
 	$authBtn.click(function() {
+		$("#global-error").html("");
 		var $email = $("input[name='email']");
 		if (check($email) == false) {
 			return false;
@@ -155,18 +156,7 @@ $(document).ready(function(){
 		new myAjax(params, succCallback);
 	});
 	
-	
-		
-	var $form = $('#register-form');
-	var $inputs = $form.find('input');
-	
-//	for (var i = 0; i < $inputs.length; i++) {
-//		var $item = $($inputs[i]);
-//		if ($item.attr("type") == undefined) {
-//			$item.on("blur", check($item));
-//		}
-//		
-//	}
+	/** Register **/
 	var checkUrl = basePath + "/is_existed";
 	
 	$("input[name='username']").blur(function() {
@@ -207,8 +197,11 @@ $(document).ready(function(){
 		new myAjax(params, succCallback);
 	});
 	
+	var $registerForm = $('#register-form');
+	var $inputs = $registerForm.find('input');
 	var registerUrl = basePath + "/admin_register";
-	$form.bind('submit', function(e) {
+	
+	$registerForm.bind('submit', function(e) {
 		var data = collectFormData($inputs);
 		
 		var params = {
@@ -219,7 +212,7 @@ $(document).ready(function(){
 		}; 
 		var succCallback = function(data) {
 			if (data.status == "SUCCESS") {
-				console.log("register success!");
+				location.href = basePath + "/home";
 			}
 			else if (data.status == "ERROR") {
 				$.each(data.errorMessageList, function(index, value) {
@@ -233,8 +226,33 @@ $(document).ready(function(){
 		};
 		e.preventDefault();
 		new myAjax(params, succCallback);
-		//return false;
 	});
 	
 	
+	/** Login **/
+	var $loginForm = $('#login-form');
+	var loginUrl = basePath + "/admin_login";
+	$loginForm.bind("submit", function(e) {
+		var username = $("input[name='username_login']").val();
+		var password = $("input[name='password_login']").val();
+		var params = {
+			url: loginUrl,
+			type: "post",
+			data: {
+				username: username,
+				password: password
+			},
+			dataType: "json"
+		};
+		var succCallback = function(data) {
+			if (data.status == "SUCCESS") {
+				location.href = basePath + "/home";
+			} 
+			else if (data.status == "INPUT") {
+				$("#login-error").html(data.message);
+			}
+		};
+		e.preventDefault();
+		new myAjax(params, succCallback);
+	});
 });

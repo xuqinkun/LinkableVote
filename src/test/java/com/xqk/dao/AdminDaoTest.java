@@ -1,6 +1,7 @@
 package com.xqk.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class AdminDaoTest extends BaseTest {
 //		params.put("username", "xxx");
 		params.put("email", email);
 		assertEquals(1, adminDao.count(params));
-		Admin admin2 = adminDao.queryOne(params);
+		Admin admin2 = adminDao.find(params);
 		assertEquals("xxx", admin2.getUsername());
 	}
 	
@@ -43,6 +44,16 @@ public class AdminDaoTest extends BaseTest {
 		params.put("oldEmail", email);
 		assertEquals(true, adminDao.update(admin));
 		assertEquals(1, adminDao.count(params));
+	}
+	
+	@Test
+	public void testFind() {
+		Map<String, String> params = new HashMap<>();
+		params.put("username", "xxx");
+		params.put("password", "111000");
+		Admin admin = adminDao.find(params);
+		assertNotEquals(null, admin);
+		assertEquals("xxx", admin.getUsername());
 		
 	}
 }

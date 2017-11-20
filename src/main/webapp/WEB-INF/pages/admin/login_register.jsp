@@ -75,8 +75,9 @@
 		        <div class="panel-body">
 		            <div class="mar-ver pad-btm">
 		                <h2 class="h2 mar-no">登录</h2>
+		                <span id="login-error" class="global-error"></span>
 		            </div>
-		            <form id="form_login">
+		            <form id="login-form">
 		                <div class="form-group">
 		                    <input type="text" name="username_login" class="form-control" placeholder="用户名/邮箱" autofocus required="required">
 		                </div>

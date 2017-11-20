@@ -56,4 +56,19 @@
 		</choose>
 	</select>
 	
+	<select id="find" resultMap="AdminResultMap">
+		<if test="password != null">
+			select username, realname, email from admin
+			where 
+			<choose>
+				<when test="username != null">
+					username = #{username}
+				</when>
+				<otherwise>
+					email = #{email}
+				</otherwise>
+			</choose>
+			and password = #{password}
+		</if> 
+	</select>
 </mapper>

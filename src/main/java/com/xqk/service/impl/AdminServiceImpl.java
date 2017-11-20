@@ -41,7 +41,7 @@ public class AdminServiceImpl implements AdminService {
 
 	@Override
 	public Admin find(Map<String, String> params) {
-		return null;
+		return adminDao.find(params);
 	}
 
 }

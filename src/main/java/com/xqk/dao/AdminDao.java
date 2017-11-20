@@ -16,5 +16,5 @@ public interface AdminDao {
 	
 	int count(Map<String, String> params);
 	
-	Admin queryOne(Map<String, String> params);
+	Admin find(Map<String, String> params);
 }
