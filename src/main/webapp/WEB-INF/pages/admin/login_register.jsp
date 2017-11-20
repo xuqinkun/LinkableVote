@@ -34,6 +34,9 @@
 		left:0;
 		width:90%;
 	}
+	.global-error {
+		color:red;
+	}
 	input.error {
 		border-color:red;
 	}
@@ -41,6 +44,10 @@
 		background: url(assets/images/pass.png)  no-repeat right ;
 		background-size: contain;
 		background-color: white;
+	}
+	.left {
+		position:absolute;
+		left:10px;
 	}
 	</style>
 
@@ -110,6 +117,7 @@
 		        <div class="panel-body" >
 		            <div class="mar-ver pad-btm">
 		                <h2 class="h2 mar-no">创建新用户</h2>
+		                <span id="global-error" class="global-error"></span>
 		            </div>
 		            <form  id="register-form" >
 		                	<div class="col-lg-2"></div>
@@ -121,13 +129,17 @@
 		                            <input name="realname" onkeyup="check(this)" class="form-control" min="2" maxLength="10" placeholder="真实姓名" required="required"/>
 		                        </div>
 		                        <div class="form-group">
-		                            <input name="password" onkeyup="check(this)" class="form-control" min="6" maxLength="15" placeholder="密码" required="required"/>
+		                            <input name="password" type="password" onkeyup="check(this)" class="form-control" min="6" maxLength="15" placeholder="密码" required="required"/>
 		                        </div>
 		                        <div class="form-group">
-		                            <input name="password2" onkeyup="check(this)" class="form-control" min="6" maxLength="15" placeholder="确认密码" required="required"/>
+		                            <input name="password2" type="password" onkeyup="check(this)" class="form-control" min="6" maxLength="15" placeholder="确认密码" required="required"/>
 		                        </div>
 		                        <div class="form-group">
 		                            <input name="email"  onkeyup="check(this)" class="form-control" maxLength="20" placeholder="电子邮箱" required="required"/>
+		                        </div>
+		                        <div class="form-group">
+		                            <input name="authCode"  class="form-control" maxLength="10" placeholder="验证码" required="required"/>
+		                            
 		                        </div>
 		                        <div class="checkbox pad-btm text-left">
 				                    <input name="agreement" class="magic-checkbox" type="checkbox">
@@ -142,6 +154,7 @@
 			                    	<span id="passwordControl" class="error"></span>
 			                    	<span id="password2Control" class="error"></span>
 			                    	<span id="emailControl" class="error"></span>
+			                    	<button class="btn btn-primary btn-sm left"  name="auth">获取验证码</button>
 			                    </div>
 		                    </div>
 		                

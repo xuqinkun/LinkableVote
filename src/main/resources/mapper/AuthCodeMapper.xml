@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xqk.dao.AuthCodeDao">
+	<resultMap type="AuthCode" id="AuthCodeResultMap">
+	  <id column="id" property="id"/>
+	  <result column="email" property="email"/>
+	  <result column="auth_code" property="authCode"/>
+	  <result column="date" property="date"/>
+ 	</resultMap>
+
+	<insert id="save" parameterType="AuthCode">
+		insert into tmp_auth_code(email,auth_code,date) 
+			values(#{email},#{authCode}, #{date})
+	</insert>
+	
+	<select id="queryByEmail" resultMap="AuthCodeResultMap">
+		select id, auth_code, email, date from tmp_auth_code 
+			where email = #{email} order by date desc limit 1
+	</select>
+	
+	<select id="count" resultType="integer">
+		select count(id) from tmp_auth_code where email = #{email}
+	</select>
+	
+	<update id="update" parameterType="AuthCode">
+		update tmp_auth_code set  
+		<if test="authCode != null">
+			auth_code = #{authCode}
+		</if>
+		<choose>
+			<when test="date != null">
+				,date = DATE_FORMAT(#{date}, '%Y-%m-%d %T')
+			</when>
+			<otherwise>
+				,date = DATE_FORMAT(now(), '%Y-%m-%d %T')
+			</otherwise>
+		</choose>
+		where email = #{email}
+	</update>
+</mapper>

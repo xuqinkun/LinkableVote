@@ -13,11 +13,13 @@ public class BeanFactory {
 				String fieldName = field.getName();
 				Class<?> fieldType = field.getType();
 				String fieldValue = params.get(fieldName);
-				String methodName = "set";
-				methodName += fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-				Method method = clazz.getMethod(methodName, fieldType);
-				Object arg = TypeParser.toType(fieldValue, fieldType);
-				method.invoke(obj, arg);
+				if (fieldValue != null) {
+					String methodName = "set";
+					methodName += fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+					Method method = clazz.getMethod(methodName, fieldType);
+					Object arg = TypeParser.toType(fieldValue, fieldType);
+					method.invoke(obj, arg);
+				}
 			}
 
 			return obj;

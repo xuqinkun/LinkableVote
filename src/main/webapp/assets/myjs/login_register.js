@@ -56,32 +56,38 @@ var check = function(item) {
 	var min = parseInt($(item).attr("min"));
 	var max = parseInt($(item).attr("maxLength"));
 	Validator.init(fieldName, name, min, max);
-	if (name == "password2") {
-		if ($("input[password]").val() == $("input[password2]").val()) {
+	if (fieldName == "password2") {
+		if ($("input[name='password']").val() == $("input[name='password2']").val()) {
 			if (Validator.validate()) {
 				Validator.render("", "bg-image", "error");
 			}
-		} else {
+		} 
+		else {
 			Validator.render("两次密码必须一致", "error", "bg-image");
+			return false;
 		}
 	} 
 	else if (fieldName == "email") {
 		Validator.init("email", "邮箱", 6, 15);
-		var email = $("#email").val();
+		var email = $("input[name='email']").val().trim();
 		if (email == null || email == "") {
 			Validator.render("邮箱不能为空", "error", "bg-image");
+			return false;
 		}
-		
-		var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
-		if(!myreg.test(email)) {
-			Validator.render("邮箱格式不正确:[用户名]+@+[域名]，如xxx@163.com", "error", "bg-image");
-		} else {
-			Validator.render("", "bg-image", "error");
+		else {
+			var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+			if(!myreg.test(email)) {
+				Validator.render("邮箱格式不正确:[用户名]+@+[域名]，如xxx@163.com", "error", "bg-image");
+				return false;
+			} else {
+				Validator.render("", "bg-image", "error");
+			}
 		}
 	} 
 	else {
-		Validator.validate();
+		return Validator.validate();
 	}
+	return true;
 }
 function collectFormData(fields) {
 	var data = {};
@@ -107,7 +113,49 @@ $(document).ready(function(){
 	});
 	
 	var basePath = $("base").attr("href");
-	var registerUrl = basePath + "/" +'${registerUrl}';
+	var $authBtn = $("button[name='auth']");
+	var intervalId = 0;
+	
+	$authBtn.click(function() {
+		var $email = $("input[name='email']");
+		if (check($email) == false) {
+			return false;
+		}
+		$authBtn.attr("disabled", true);
+		var params = {
+			url: basePath + "/" + "sendAuthCode",
+			type: "post",
+			dataType: "json",
+			data: {
+				email:$email.val()
+			}
+		}
+		var succCallback = function(data) {
+			if (data.result == false) {
+				$("#global-error").html("发送验证码失败！");
+				$authBtn.attr("disabled", false);
+				$authBtn.text("获取验证码");
+				clearInterval(intervalId);
+			} else {
+				console.log("true");
+			}
+		}
+		var count = 60;
+		function timeCounter() {
+			$authBtn.text(--count + "S" + "后重新获取");
+			if (count == 0) {
+				$authBtn.attr("disabled", false);
+				$authBtn.text("获取验证码");
+				clearInterval(intervalId);
+				return;
+			}
+		}
+		intervalId = setInterval(timeCounter, 1000);
+		
+		new myAjax(params, succCallback);
+	});
+	
+	
 		
 	var $form = $('#register-form');
 	var $inputs = $form.find('input');
@@ -119,9 +167,48 @@ $(document).ready(function(){
 //		}
 //		
 //	}
-		
+	var checkUrl = basePath + "/is_existed";
+	
+	$("input[name='username']").blur(function() {
+		var params = {
+				url : checkUrl,
+				type: "post",
+				dataType: "json",
+				data: {
+					username:$("input[name='username']").val()
+				}
+			}; 
+		var succCallback = function(data) {
+			if (data.status == "SUCCESS") {
+				
+			} else if (data.status == "FAIL") {
+				$("#usernameControl").html("该用户名已被注册");
+			}
+		}
+		new myAjax(params, succCallback);
+	});
+	
+	$("input[name='email']").blur(function() {
+		var params = {
+				url : checkUrl,
+				type: "post",
+				dataType: "json",
+				data: {
+					email:$("input[name='email']").val()
+				}
+			}; 
+		var succCallback = function(data) {
+			if (data.status == "SUCCESS") {
+				
+			} else if (data.status == "FAIL") {
+				$("#emailControl").html("该邮箱已被注册");
+			}
+		}
+		new myAjax(params, succCallback);
+	});
+	
+	var registerUrl = basePath + "/admin_register";
 	$form.bind('submit', function(e) {
-		// Ajax validation
 		var data = collectFormData($inputs);
 		
 		var params = {
@@ -134,15 +221,19 @@ $(document).ready(function(){
 			if (data.status == "SUCCESS") {
 				console.log("register success!");
 			}
-			if (data.status == "ERROR") {
+			else if (data.status == "ERROR") {
 				$.each(data.errorMessageList, function(index, value) {
 					var $span = $("#" + value.fieldName + "control");
-					$span.html(message);
+					$span.html(value.message);
 				});
+			}
+			else if (data.status == "FAILED") {
+				$("#global-error").html(data.message);
 			}
 		};
 		e.preventDefault();
-		return false;
+		new myAjax(params, succCallback);
+		//return false;
 	});
 	
 	

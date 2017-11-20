@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xqk.dao.AdminDao">
+	<resultMap type="Admin" id="AdminResultMap">
+	  <id column="id" property="id"/>
+	  <result column="username" property="username"/>
+	  <result column="realname" property="realname"/>
+	  <result column="password" property="password"/>
+	  <result column="email" property="email"/>
+	  <result column="create_time" property="createTime"/>
+ 	</resultMap>
+ 	
+	<insert id="save" parameterType="Admin">
+		insert into admin(username, realname, password, email, create_time) 
+			values(#{username}, #{realname}, #{password}, #{email}, #{createTime})
+	</insert>
+	
+	<select id="queryOne" resultMap="AdminResultMap">
+		select id, username, realname, email, create_time from admin 
+			where 
+			<choose>
+				<when test="email != null">
+					email = #{email}
+				</when>
+				<otherwise>
+					username = #{username}
+				</otherwise>
+			</choose>
+			order by create_time desc limit 1
+	</select>
+	
+	<update id="update" parameterType="admin">
+		update admin set
+		<if test="password != null">
+			password = #{password},
+		</if>
+		<if test="email != null">
+			email = #{email},
+		</if>
+		<if test="createTime != null">
+			create_time = DATE_FORMAT(#{createTime}, '%y-%m-%d %T')
+		</if>
+		where username = #{username}
+	</update>
+	
+	<select id="count" resultType="integer">
+		select count(id) from admin where
+		<choose>
+			<when test="email != null">
+				email = #{email}
+			</when>
+			<otherwise>
+				username = #{username}
+			</otherwise>
+		</choose>
+	</select>
+	
+</mapper>

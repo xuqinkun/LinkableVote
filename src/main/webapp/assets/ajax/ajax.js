@@ -8,9 +8,13 @@ var myAjax = function(params, succCallback, failCallback, allCallback) {
 	.fail(function(jqXHR, textStatus, errorThrown){
 		console.log("===fail===");
 		console.log(textStatus);
-		console.log(jqXHR.responseJSON.returnMessage)
+		if (jqXHR.responseJSON && jqXHR.responseJSON.returnMessage) {
+			console.log(jqXHR.responseJSON.returnMessage)
+		}
 	})
-	.always(function(){
-		
+	.always(function() {
+		if (allCallback) {
+			allCallback();
+		}
 	});
 };
